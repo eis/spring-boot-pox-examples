@@ -21,6 +21,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,14 +59,13 @@ public class ApplicationIntegrationTests {
     @Test
     public void testSendAndReceive() throws Exception {
         Credentials credentials = new UsernamePasswordCredentials("user", "pass");
-        org.apache.http.impl.client.DefaultHttpClient defaultClient =
-                new org.apache.http.impl.client.DefaultHttpClient(
-                		new org.apache.http.impl.conn.PoolingClientConnectionManager());
-        defaultClient.getCredentialsProvider().setCredentials(AuthScope.ANY,
-        		credentials);
+        CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+        credentialsProvider.setCredentials(AuthScope.ANY, credentials);
+        CloseableHttpClient client = HttpClientBuilder.create().
+        	setDefaultCredentialsProvider(credentialsProvider).build();
 
         HttpComponentsMessageSender messageSender = new HttpComponentsMessageSender(
-        		defaultClient);
+        		client);
         messageSender.setCredentials(credentials);
         messageSender.afterPropertiesSet();
 
