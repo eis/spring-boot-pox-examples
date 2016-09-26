@@ -28,6 +28,7 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.ClassUtils;
 import org.springframework.ws.client.core.WebServiceTemplate;
+import org.springframework.ws.pox.dom.DomPoxMessageFactory;
 
 import io.spring.guides.gs_producing_web_service.GetCountryRequest;
 
@@ -36,6 +37,7 @@ import io.spring.guides.gs_producing_web_service.GetCountryRequest;
 public class ApplicationIntegrationTests {
 
     private Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+    
 
     @LocalServerPort
     private int port = 0;
@@ -49,6 +51,7 @@ public class ApplicationIntegrationTests {
     @Test
     public void testSendAndReceive() {
         WebServiceTemplate ws = new WebServiceTemplate(marshaller);
+        ws.setMessageFactory(new DomPoxMessageFactory());
         GetCountryRequest request = new GetCountryRequest();
         request.setName("Spain");
 
