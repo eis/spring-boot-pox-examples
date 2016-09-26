@@ -18,6 +18,9 @@ package hello;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,6 +32,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.ClassUtils;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.pox.dom.DomPoxMessageFactory;
+import org.springframework.ws.transport.http.HttpComponentsMessageSender;
 
 import io.spring.guides.gs_producing_web_service.GetCountryRequest;
 
@@ -49,8 +53,21 @@ public class ApplicationIntegrationTests {
     }
 
     @Test
-    public void testSendAndReceive() {
+    public void testSendAndReceive() throws Exception {
+        Credentials credentials = new UsernamePasswordCredentials("user", "pass");
+        org.apache.http.impl.client.DefaultHttpClient defaultClient =
+                new org.apache.http.impl.client.DefaultHttpClient(
+                		new org.apache.http.impl.conn.PoolingClientConnectionManager());
+        defaultClient.getCredentialsProvider().setCredentials(AuthScope.ANY,
+        		credentials);
+
+        HttpComponentsMessageSender messageSender = new HttpComponentsMessageSender(
+        		defaultClient);
+        messageSender.setCredentials(credentials);
+        messageSender.afterPropertiesSet();
+
         WebServiceTemplate ws = new WebServiceTemplate(marshaller);
+        ws.setMessageSender(messageSender);
         ws.setMessageFactory(new DomPoxMessageFactory());
         GetCountryRequest request = new GetCountryRequest();
         request.setName("Spain");
