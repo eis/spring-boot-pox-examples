@@ -147,16 +147,6 @@ public class ApplicationIntegrationTests {
 	public void testSendAndReceive() {
 		WebServiceTemplate ws = new WebServiceTemplate(marshaller);
 		ws.setMessageFactory(new DomPoxMessageFactory());
-		GetCountryRequest request = new GetCountryRequest();
-		request.setName("Spain");
-
-		assertThat(ws.marshalSendAndReceive("http://localhost:"
-				+ port + "/ws", request)).isNotNull();
-	}
-	@Test
-	public void testSendAndReceiveWithCertificates() {
-		WebServiceTemplate ws = new WebServiceTemplate(marshaller);
-		ws.setMessageFactory(new DomPoxMessageFactory());
 		ws.setMessageSender(messageSender);
 		GetCountryRequest request = new GetCountryRequest();
 		request.setName("Spain");
